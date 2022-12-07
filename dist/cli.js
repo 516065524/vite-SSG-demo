@@ -16,7 +16,6 @@ var DEFAULT_HTML_PATH = _path.join.call(void 0, PACKAGE_ROOT, "template.html");
 // src/node/build.ts
 
 var _fsextra = require('fs-extra'); var _fsextra2 = _interopRequireDefault(_fsextra);
-var _ora = require('ora'); var _ora2 = _interopRequireDefault(_ora);
 async function bundle(root) {
   const resolveViteConfig = (isServer) => ({
     mode: "production",
@@ -32,7 +31,6 @@ async function bundle(root) {
       }
     }
   });
-  const spinner = _ora2.default.call(void 0, );
   try {
     const [clientBundle, serverBundle] = await Promise.all([
       _vite.build.call(void 0, resolveViteConfig(false)),
@@ -47,7 +45,7 @@ async function renderPage(render, root, clientBundle) {
   const clientChunk = clientBundle.output.find(
     (chunk) => chunk.type === "chunk" && chunk.isEntry
   );
-  console.log(`Rendering page in server side...`);
+  console.log("Rendering page in server side...");
   const appHtml = render();
   const html = `
 <!DOCTYPE html>

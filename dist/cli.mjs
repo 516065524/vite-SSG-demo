@@ -23,7 +23,6 @@ var DEFAULT_HTML_PATH = join(PACKAGE_ROOT, "template.html");
 // src/node/build.ts
 import { join as join2 } from "path";
 import fs from "fs-extra";
-import ora from "ora";
 async function bundle(root) {
   const resolveViteConfig = (isServer) => ({
     mode: "production",
@@ -39,7 +38,6 @@ async function bundle(root) {
       }
     }
   });
-  const spinner = ora();
   try {
     const [clientBundle, serverBundle] = await Promise.all([
       viteBuild(resolveViteConfig(false)),
@@ -54,7 +52,7 @@ async function renderPage(render, root, clientBundle) {
   const clientChunk = clientBundle.output.find(
     (chunk) => chunk.type === "chunk" && chunk.isEntry
   );
-  console.log(`Rendering page in server side...`);
+  console.log("Rendering page in server side...");
   const appHtml = render();
   const html = `
 <!DOCTYPE html>
