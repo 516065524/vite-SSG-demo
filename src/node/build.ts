@@ -5,6 +5,7 @@ import { join } from "path";
 import fs from "fs-extra";
 // import ora from "ora";
 
+console.log(213);
 export async function bundle(root: string) {
   const resolveViteConfig = (isServer: boolean): InlineConfig => ({
     mode: "production",
