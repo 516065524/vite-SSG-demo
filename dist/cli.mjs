@@ -23,6 +23,7 @@ var DEFAULT_HTML_PATH = join(PACKAGE_ROOT, "template.html");
 // src/node/build.ts
 import { join as join2 } from "path";
 import fs from "fs-extra";
+console.log(213);
 async function bundle(root) {
   const resolveViteConfig = (isServer) => ({
     mode: "production",
@@ -130,7 +131,12 @@ import pluginReact from "@vitejs/plugin-react";
 function createDevServer(root) {
   return createServer({
     root,
-    plugins: [pluginIndexHtml(), pluginReact()]
+    plugins: [pluginIndexHtml(), pluginReact()],
+    server: {
+      fs: {
+        allow: [PACKAGE_ROOT]
+      }
+    }
   });
 }
 

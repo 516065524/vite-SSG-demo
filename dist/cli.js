@@ -16,6 +16,7 @@ var DEFAULT_HTML_PATH = _path.join.call(void 0, PACKAGE_ROOT, "template.html");
 // src/node/build.ts
 
 var _fsextra = require('fs-extra'); var _fsextra2 = _interopRequireDefault(_fsextra);
+console.log(213);
 async function bundle(root) {
   const resolveViteConfig = (isServer) => ({
     mode: "production",
@@ -123,7 +124,12 @@ var _pluginreact = require('@vitejs/plugin-react'); var _pluginreact2 = _interop
 function createDevServer(root) {
   return _vite.createServer.call(void 0, {
     root,
-    plugins: [pluginIndexHtml(), _pluginreact2.default.call(void 0, )]
+    plugins: [pluginIndexHtml(), _pluginreact2.default.call(void 0, )],
+    server: {
+      fs: {
+        allow: [PACKAGE_ROOT]
+      }
+    }
   });
 }
 
