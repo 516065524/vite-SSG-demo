@@ -7,7 +7,7 @@ var __dirname = /* @__PURE__ */ getDirname();
 
 // src/node/cli.ts
 import cac from "cac";
-import { resolve } from "path";
+import { resolve as resolve2 } from "path";
 
 // src/node/build.ts
 import { build as viteBuild } from "vite";
@@ -128,7 +128,44 @@ function pluginIndexHtml() {
 
 // src/node/dev.ts
 import pluginReact from "@vitejs/plugin-react";
-function createDevServer(root) {
+
+// src/node/config.ts
+import { loadConfigFromFile } from "vite";
+import { resolve } from "path";
+import fs3 from "fs-extra";
+function getUserConfigPath(root) {
+  try {
+    const supportConfigFiles = ["config.ts", "config.js"];
+    const configPath = supportConfigFiles.map((file) => resolve(root, file)).find(fs3.pathExistsSync);
+    return configPath;
+  } catch (e) {
+    console.log(`Failed to load user config: ${e}`);
+    throw e;
+  }
+}
+async function resolveConfig(root, command, mode) {
+  const configPath = getUserConfigPath(root);
+  const result = await loadConfigFromFile(
+    {
+      command,
+      mode
+    },
+    configPath,
+    root
+  );
+  if (result) {
+    const { config: rawConfig = {} } = result;
+    const userConfig = await (typeof rawConfig === "function" ? rawConfig() : rawConfig);
+    return [configPath, userConfig];
+  } else {
+    return [configPath, {}];
+  }
+}
+
+// src/node/dev.ts
+async function createDevServer(root) {
+  const config = await resolveConfig(root, "serve", "development");
+  console.log({ config });
   return createServer({
     root,
     plugins: [pluginIndexHtml(), pluginReact()],
@@ -149,7 +186,7 @@ cli.command("dev [root]", "start dev server").action(async (root) => {
 });
 cli.command("build [root]", "build in production").action(async (root) => {
   try {
-    root = resolve(root);
+    root = resolve2(root);
     await build(root);
   } catch (e) {
     console.log(e);
