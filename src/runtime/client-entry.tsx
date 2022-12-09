@@ -1,3 +1,4 @@
+import siteData from "island:site-data";
 import { createRoot } from "react-dom/client";
 import { App } from "./app";
 
