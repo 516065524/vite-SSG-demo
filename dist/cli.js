@@ -1,7 +1,11 @@
 "use strict"; function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; } function _optionalChain(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
 
-var _chunkKW5LJDZWjs = require('./chunk-KW5LJDZW.js');
+
+var _chunkTARFW24Ujs = require('./chunk-TARFW24U.js');
+
+
+var _chunkAY7BB6AJjs = require('./chunk-AY7BB6AJ.js');
 
 // src/node/cli.ts
 var _cac = require('cac'); var _cac2 = _interopRequireDefault(_cac);
@@ -11,16 +15,21 @@ var _path = require('path');
 var _vite = require('vite');
 
 var _fsextra = require('fs-extra'); var _fsextra2 = _interopRequireDefault(_fsextra);
+var _pluginreact = require('@vitejs/plugin-react'); var _pluginreact2 = _interopRequireDefault(_pluginreact);
 console.log(213);
-async function bundle(root) {
+async function bundle(root, config) {
   const resolveViteConfig = (isServer) => ({
     mode: "production",
     root,
+    plugins: [_pluginreact2.default.call(void 0, ), _chunkTARFW24Ujs.pluginConfig.call(void 0, config)],
+    ssr: {
+      noExternal: ["react-router-dom"]
+    },
     build: {
       ssr: isServer,
       outDir: isServer ? ".temp" : "build",
       rollupOptions: {
-        input: isServer ? _chunkKW5LJDZWjs.SERVER_ENTRY_PATH : _chunkKW5LJDZWjs.CLIENT_ENTRY_PATH,
+        input: isServer ? _chunkTARFW24Ujs.SERVER_ENTRY_PATH : _chunkTARFW24Ujs.CLIENT_ENTRY_PATH,
         output: {
           format: isServer ? "cjs" : "esm"
         }
@@ -61,8 +70,8 @@ async function renderPage(render, root, clientBundle) {
   await _fsextra2.default.writeFile(_path.join.call(void 0, root, "build/index.html"), html);
   await _fsextra2.default.remove(_path.join.call(void 0, root, ".temp"));
 }
-async function build(root = process.cwd()) {
-  const [clientBundle] = await bundle(root);
+async function build(root = process.cwd(), config) {
+  const [clientBundle] = await bundle(root, config);
   const serverEntryPath = _path.join.call(void 0, root, ".temp", "ssr-entry.js");
   const { render } = await Promise.resolve().then(() => require(serverEntryPath));
   await renderPage(render, root, clientBundle);
@@ -85,7 +94,8 @@ cli.command("dev [root]", "start dev server").action(async (root) => {
 cli.command("build [root]", "build in production").action(async (root) => {
   try {
     root = _path.resolve.call(void 0, root);
-    await build(root);
+    const config = await _chunkAY7BB6AJjs.resolveConfig.call(void 0, root, "build", "production");
+    await build(root, config);
   } catch (e) {
     console.log(e);
   }

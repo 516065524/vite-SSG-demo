@@ -1,8 +1,11 @@
 import {
   CLIENT_ENTRY_PATH,
-  SERVER_ENTRY_PATH
-} from "./chunk-CQ4UHIAM.mjs";
-import "./chunk-6ZEXCGKN.mjs";
+  SERVER_ENTRY_PATH,
+  pluginConfig
+} from "./chunk-XGGYMCXG.mjs";
+import {
+  resolveConfig
+} from "./chunk-26HVH7DZ.mjs";
 
 // src/node/cli.ts
 import cac from "cac";
@@ -12,11 +15,16 @@ import { resolve } from "path";
 import { build as viteBuild } from "vite";
 import { join } from "path";
 import fs from "fs-extra";
+import pluginReact from "@vitejs/plugin-react";
 console.log(213);
-async function bundle(root) {
+async function bundle(root, config) {
   const resolveViteConfig = (isServer) => ({
     mode: "production",
     root,
+    plugins: [pluginReact(), pluginConfig(config)],
+    ssr: {
+      noExternal: ["react-router-dom"]
+    },
     build: {
       ssr: isServer,
       outDir: isServer ? ".temp" : "build",
@@ -62,8 +70,8 @@ async function renderPage(render, root, clientBundle) {
   await fs.writeFile(join(root, "build/index.html"), html);
   await fs.remove(join(root, ".temp"));
 }
-async function build(root = process.cwd()) {
-  const [clientBundle] = await bundle(root);
+async function build(root = process.cwd(), config) {
+  const [clientBundle] = await bundle(root, config);
   const serverEntryPath = join(root, ".temp", "ssr-entry.js");
   const { render } = await import(serverEntryPath);
   await renderPage(render, root, clientBundle);
@@ -86,7 +94,8 @@ cli.command("dev [root]", "start dev server").action(async (root) => {
 cli.command("build [root]", "build in production").action(async (root) => {
   try {
     root = resolve(root);
-    await build(root);
+    const config = await resolveConfig(root, "build", "production");
+    await build(root, config);
   } catch (e) {
     console.log(e);
   }

@@ -1,12 +1,12 @@
 import {
   CLIENT_ENTRY_PATH,
   DEFAULT_HTML_PATH,
-  PACKAGE_ROOT
-} from "./chunk-CQ4UHIAM.mjs";
+  PACKAGE_ROOT,
+  pluginConfig
+} from "./chunk-XGGYMCXG.mjs";
 import {
   resolveConfig
-} from "./chunk-63W4PO6I.mjs";
-import "./chunk-6ZEXCGKN.mjs";
+} from "./chunk-26HVH7DZ.mjs";
 
 // src/node/dev.ts
 import { createServer } from "vite";
@@ -54,47 +54,13 @@ function pluginIndexHtml() {
   };
 }
 
-// src/node/plugin-island/config.ts
-import { relative } from "path";
-var SITE_DATA_ID = "island:site-data";
-function pluginConfig(config, restart) {
-  let server = null;
-  return {
-    name: "island:config",
-    resolveId(id) {
-      if (id === SITE_DATA_ID) {
-        return "\0" + SITE_DATA_ID;
-      }
-    },
-    load(id) {
-      if (id === "\0" + SITE_DATA_ID) {
-        return `export default ${JSON.stringify(config.siteData)}`;
-      }
-    },
-    configureServer(s) {
-      server = s;
-    },
-    async handleHotUpdate(ctx) {
-      const customWatchedFiles = [config.configPath];
-      const include = (id) => customWatchedFiles.some((file) => id.includes(file));
-      if (include(ctx.file)) {
-        console.log(
-          `
-${relative(config.root, ctx.file)} changed, restarting server...`
-        );
-      }
-      await restart();
-    }
-  };
-}
-
 // src/node/dev.ts
 import pluginReact from "@vitejs/plugin-react";
 async function createDevServer(root, restart) {
   const config = await resolveConfig(root, "serve", "development");
   console.log({ config });
   return createServer({
-    root,
+    root: PACKAGE_ROOT,
     plugins: [pluginIndexHtml(), pluginReact(), pluginConfig(config, restart)],
     server: {
       fs: {
