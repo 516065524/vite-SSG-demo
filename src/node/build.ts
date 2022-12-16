@@ -1,4 +1,4 @@
-import { build as viteBuild, InlineConfig, Plugin } from "vite";
+import { build as viteBuild, InlineConfig } from "vite";
 import type { RollupOutput } from "rollup";
 import { CLIENT_ENTRY_PATH, SERVER_ENTRY_PATH } from "./constants";
 import { join } from "path";
